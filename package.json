@@ -4,7 +4,7 @@
   "description": "Track the progress of your body",
   "main": "app.ts",
   "scripts": {
-    "build": "rm -rf dist && tsc -b tsconfig.json",
+    "build": "tslint -p . && rm -rf dist && tsc -b tsconfig.json",
     "start": "node dist/app.js"
   },
   "repository": {
