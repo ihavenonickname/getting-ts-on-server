@@ -22,6 +22,8 @@ import SummaryService from '../services/SummaryService'
 
 import { Response } from 'express'
 
+import * as HttpStatus from 'http-status-codes'
+
 @JsonController('/summaries')
 @Service()
 export default class SummaryController {
@@ -29,36 +31,36 @@ export default class SummaryController {
     private summaryService!: SummaryService
 
     @Get('/')
-    public findAll() {
+    public findAll(): Promise<Summary[]> {
         return this.summaryService.findAll()
     }
 
     @Get('/:id')
-    @OnUndefined(404)
-    public find(@Param('id') id: number) {
+    @OnUndefined(HttpStatus.NOT_FOUND)
+    public find(@Param('id') id: number): Promise<Summary | undefined> {
         return this.summaryService.find(id)
     }
 
     @Post('/')
-    @OnUndefined(201)
-    public async save(@Body() summary: Summary, @Res() response: Response) {
+    @OnUndefined(HttpStatus.CREATED)
+    public async save(@Body() summary: Summary, @Res() response: Response): Promise<void> {
         const id = await this.summaryService.save(summary)
         response.location('/summaries/' + id)
     }
 
     @Patch('/:id')
-    @OnUndefined(204)
-    public async update(@Param('id') id: number, @Body() summary: Summary) {
+    @OnUndefined(HttpStatus.NO_CONTENT)
+    public async update(@Param('id') id: number, @Body() summary: Summary): Promise<void> {
         if (id !== summary.id) {
-            throw new HttpError(409, 'id fields do not match')
+            throw new HttpError(HttpStatus.CONFLICT, 'id fields do not match')
         }
 
         await this.summaryService.update(summary)
     }
 
     @Delete('/:id')
-    @OnUndefined(204)
-    public async delete(@Param('id') id: number) {
+    @OnUndefined(HttpStatus.NO_CONTENT)
+    public async delete(@Param('id') id: number): Promise<void> {
         await this.summaryService.delete(id)
     }
 }
